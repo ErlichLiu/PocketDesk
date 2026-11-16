@@ -9,7 +9,10 @@ struct UpdateSourceTests {
         let decoded = try JSONDecoder().decode(UpdateSource.self, from: JSONEncoder().encode(source))
         #expect(decoded == source)
         #expect(!decoded.isEnabled)
-        #expect(decoded.feedURL.absoluteString == "about:blank#pocketdesk-updates-disabled")
+        // Older Foundation encodes the fragment delimiter for opaque about: URLs.
+        #expect(decoded.feedURL.scheme == "about")
+        #expect(decoded.feedURL.host == nil)
+        #expect(decoded.feedURL.absoluteString.removingPercentEncoding == "about:blank#pocketdesk-updates-disabled")
         #expect(decoded.downloadPage == decoded.feedURL)
     }
 

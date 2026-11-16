@@ -25,7 +25,7 @@ Do not commit actual diagnostic output or a recovery ledger. Redact account name
 
 ## Public import discipline
 
-The 0.2.4 import preserves production/vendor/resource bytes and executable modes. One test-helper closure has an explicit raw-buffer type annotation for older Foundation overload resolution; its byte-generation algorithm is unchanged. No developer memory, private validation journal, machine environment file, generated bundle or unrelated development Git history is imported. The native CI builds without launching the app.
+The 0.2.4 import preserves production/vendor/resource bytes and executable modes. Two test-only portability adjustments cover older Foundation: an explicit raw-buffer type annotation and normalization of equivalent about-URL encoding, retaining assertions for an inert scheme and no host. Application behavior and the byte-generation algorithm are unchanged. No developer memory, private validation journal, machine environment file, generated bundle or unrelated development Git history is imported. The native CI builds without launching the app.
 
 Publication checks run from the monorepo root:
 
