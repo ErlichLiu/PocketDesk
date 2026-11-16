@@ -20,7 +20,7 @@
 
 ```text
 apps/windows     Windows 应用、测试与用户级安装脚本
-apps/macos       macOS 0.2.4 应用、Swift 测试、系统适配与本地打包
+apps/macos       macOS 0.2.5 应用、Swift 测试、系统适配与本地打包
 drivers/windows  未验证可加载的 IddCx 实验驱动，单独采用 MS-PL
 docs             跨平台边界与设计说明
 tools            提交前安全与文件范围检查
@@ -60,7 +60,7 @@ scripts/pocketdesk app
 
 产物为 `apps/macos/build/PocketDesk.app`（相对仓库根），仅本机架构、ad-hoc 签名，未公证。脚本不会安装、启动、申请权限、建屏或移动真实窗口。
 
-macOS 0.2.4 根据当前本机被控的明确手机证据，或显式且有时限的手动操作建立独立手机屏。未知身份、历史推流及手机控制 Windows 不构成自动授权。首次/无窗口也保留桌面和底部 bar，不自动弹列表；主动点 bar 才选择窗口，有效的上次窗口可直接恢复。Find N5 外屏/展开布局为显式切换，不猜测折叠状态。
+macOS 0.2.5 根据当前本机被控的明确手机证据，或显式且有时限的手动操作建立独立手机屏。未知身份、历史推流及手机控制 Windows 不构成自动授权。首次/无窗口也保留桌面和底部 bar，不自动弹列表；主动点 bar 才选择窗口，有效的上次窗口可直接恢复。Find N5 外屏/展开布局为显式切换，不猜测折叠状态。
 
 权限、安全边界与真实设备验收范围见 [macOS 说明](apps/macos/README.zh-CN.md)。不要把该机制等同于 Windows 的手动选择既有虚拟屏。
 

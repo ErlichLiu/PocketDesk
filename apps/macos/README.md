@@ -1,6 +1,6 @@
 # PocketDesk for macOS
 
-Native Swift / AppKit / SwiftUI companion for UU Remote, **0.2.4**. It offers an isolated phone-sized display, window placement/restoration and explicit Find N5 cover/unfolded layouts. It is not a remote transport or a phone/Windows client.
+Native Swift / AppKit / SwiftUI companion for UU Remote, **0.2.5**. It offers an isolated phone-sized display, window placement/restoration and explicit Find N5 cover/unfolded layouts. It is not a remote transport or a phone/Windows client.
 
 [简体中文](README.zh-CN.md) · [Development](docs/development.md) · [Architecture](docs/architecture.md) · [Monorepo](../../README.md)
 

@@ -6,6 +6,14 @@ import Observation
 import SnugCore
 import SnugSystem
 
+protocol WindowCatalogReading: Sendable {
+    func list() async -> [WindowInfo]
+    func startListing()
+    func stopListing(permanently: Bool)
+}
+
+extension WindowService: WindowCatalogReading {}
+
 @MainActor
 @Observable
 final class WindowCatalog {
@@ -15,17 +23,20 @@ final class WindowCatalog {
     /// 第一次刷新完成前不显示「没有窗口」
     private(set) var loaded: Bool
 
-    @ObservationIgnored private let service: WindowService?
+    @ObservationIgnored private let service: (any WindowCatalogReading)?
     @ObservationIgnored private var refreshing: Task<Void, Never>?
     @ObservationIgnored private var warming: Task<Void, Never>?
     @ObservationIgnored private var stoppedForQuit = false
     @ObservationIgnored private var paused = false
     @ObservationIgnored private var icons: [String: NSImage] = [:]
 
-    init(service: WindowService) {
+    init(service: any WindowCatalogReading) {
         self.service = service
         windows = []
         loaded = false
+        // Startup prewarm is CG/cache only; hidden AX enrichment stays disabled.
+        service.stopListing(permanently: false)
+        Log.info("窗口目录预热开始（仅CG与缓存）")
         // 只预热一轮，不在手机屏不存在时持续轮询；首屏不必等建屏完成才开始读取。
         warming = Task { [weak self] in
             let began = ProcessInfo.processInfo.systemUptime
@@ -48,8 +59,21 @@ final class WindowCatalog {
         self.loaded = loaded
     }
 
+    /// Presentation policy is shared by the panel and fake-service regression tests.
+    func updatePresentation(_ state: AppState) {
+        setPaused(state.phone.work != nil)
+        // Explicit picker visibility is read-only demand, not display authority.
+        // An inferred UU stream ID must never suppress the user's first read.
+        if state.phone.display != nil, state.phone.listVisible, !paused {
+            startRefreshing()
+        } else {
+            stopRefreshing()
+        }
+    }
+
     func startRefreshing() {
         guard !stoppedForQuit, refreshing == nil, let service else { return }
+        Log.info("窗口列表刷新请求启动（缓存 \(windows.count) 个）")
         if !paused { service.startListing() }
         refreshing = Task { [weak self] in
             var reorder = true
@@ -75,18 +99,18 @@ final class WindowCatalog {
     }
 
     func stopRefreshing() {
-        warming?.cancel()
-        warming = nil
+        // Preserve the one-shot prewarm through hide/reset. It cannot poll or
+        // enrich while listing is stopped; only shutdown cancels it permanently.
         refreshing?.cancel()
         refreshing = nil
-        service?.stopListing()
+        service?.stopListing(permanently: false)
     }
 
     /// 暂停、继续刷新：取消后台探测，保留已显示的顺序和缓存。
     func setPaused(_ on: Bool) {
         guard paused != on else { return }
         paused = on
-        if on { service?.stopListing() }
+        if on { service?.stopListing(permanently: false) }
         else if refreshing != nil, !stoppedForQuit { service?.startListing() }
     }
 
@@ -94,7 +118,10 @@ final class WindowCatalog {
     func reset() { stopRefreshing() }
 
     func shutdown() {
+        guard !stoppedForQuit else { return }
         stoppedForQuit = true
+        warming?.cancel()
+        warming = nil
         stopRefreshing()
         service?.stopListing(permanently: true)
     }

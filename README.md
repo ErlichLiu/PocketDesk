@@ -69,7 +69,7 @@ scripts/pocketdesk app
 
 The build command does **not** install, launch, request permissions or create a display. It produces a host-architecture, ad-hoc-signed development app, not a notarized release. A rebuild may require renewed macOS permission approval.
 
-The imported macOS version is **0.2.4**. It creates an isolated phone display only after explicit manual intent or fresh, scoped evidence that a recognized phone controls this Mac. Historical streaming and a phone controlling Windows are not activation authority. First-time/empty desktops retain the bottom bar; the window picker opens explicitly, and a valid remembered window can resume without showing it.
+The current macOS version is **0.2.5**. It creates an isolated phone display only after explicit manual intent or fresh, scoped evidence that a recognized phone controls this Mac. Historical streaming and a phone controlling Windows are not activation authority. First-time/empty desktops retain the bottom bar; the window picker opens explicitly, and a valid remembered window can resume without showing it.
 
 See [macOS details](apps/macos/README.md) for permissions, data isolation, foldable layouts and real-device validation limits. The Windows manual-monitor workflow is intentionally different.
 

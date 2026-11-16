@@ -1,6 +1,6 @@
 # PocketDesk macOS 版
 
-原生 Swift / AppKit / SwiftUI 的 UU 远程伴侣，当前源码版本 **0.2.4**。复用 MIT 上游的显示、窗口及手势引擎，提供独立手机屏、窗口放置/还原与 Find N5 外屏/展开布局；不负责远控传输。
+原生 Swift / AppKit / SwiftUI 的 UU 远程伴侣，当前源码版本 **0.2.5**。复用 MIT 上游的显示、窗口及手势引擎，提供独立手机屏、窗口放置/还原与 Find N5 外屏/展开布局；不负责远控传输。
 
 [English](README.md) · [开发说明](docs/development.md) · [架构](docs/architecture.md) · [Monorepo](../../README.zh-CN.md)
 
