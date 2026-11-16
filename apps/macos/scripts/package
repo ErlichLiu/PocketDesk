@@ -28,7 +28,8 @@ lipo -create build/PocketDesk.app/Contents/MacOS/PocketDesk "$bin/PocketDesk" -o
 strip -S "$stage/universal"
 mv "$stage/universal" "$app/Contents/MacOS/PocketDesk"
 chmod 755 "$app/Contents/MacOS/PocketDesk"
-lipo -verify_arch arm64 x86_64 "$app/Contents/MacOS/PocketDesk"
+slices="$(lipo -archs "$app/Contents/MacOS/PocketDesk")"
+[[ " $slices " == *" arm64 "* && " $slices " == *" x86_64 "* ]] || { echo 'Missing architecture slice' >&2; exit 1; }
 codesign --force --sign - --timestamp=none --identifier cool.proma.pocketdesk "$app"
 codesign --verify --strict --deep --all-architectures "$app"
 plutil -lint "$app/Contents/Info.plist"
