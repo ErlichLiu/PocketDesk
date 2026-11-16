@@ -31,7 +31,6 @@ final class PhoneScreenWindows {
     private func follow() {
         withObservationTracking {
             _ = state.phone
-            _ = state.streamedDisplay
             _ = state.quitting
             _ = state.config.phoneLayout
         } onChange: { [weak self] in
@@ -65,14 +64,9 @@ final class PhoneScreenWindows {
 
         let showList = phone.listVisible
         if showList { list.orderFrontRegardless() } else { list.orderOut(nil) }
-        // 首屏由 CG 与缓存给出，AX 补全已独立；手机没在看手机屏或正在搬窗时不做额外探测。
-        // 不知道 UU 在推哪块屏（推流日志没读到）时照旧刷
-        catalog.setPaused(phone.work != nil)
-        if showList, state.streamedDisplay == nil || state.phoneInUse {
-            catalog.startRefreshing()
-        } else {
-            catalog.stopRefreshing()
-        }
+        // Explicit visibility requests read-only data regardless of inferred stream ID.
+        // Busy work pauses reads; hidden views stop polling but keep startup prewarm.
+        catalog.updatePresentation(state)
         if phone.homeBarVisible { homeBar.orderFrontRegardless() } else { homeBar.orderOut(nil) }
     }
 

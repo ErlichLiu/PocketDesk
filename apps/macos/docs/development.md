@@ -37,3 +37,11 @@ gitleaks git --redact --no-banner
 ```
 
 Keep upstream [MIT attribution](../LICENSE), [dependency license](../Vendor/PermissionFlow/LICENSE), asset provenance and root [NOTICE](../../../NOTICE). The two binary icon files are pinned by digest in the publication checker; any change requires explicit byte review and a deliberate pin update, not a broad binary exemption.
+
+## Picker refresh regression coverage
+
+`SnugAppTests` imports the executable module's model types without invoking its entry point. The tests instantiate only `WindowCatalog`, a fake listing backend and plain `AppState`; they do not initialize `NSApplication`, construct a real window service, enumerate real windows, fetch icons, request permission or manipulate displays.
+
+The actual panel calls the model's tested presentation method. A visible picker must start read-only refresh for unknown, matching or mismatched inferred stream IDs; stream inference is not a prerequisite for reading. Busy/hidden states stop periodic work, and busy completion can immediately start a new read. Startup prewarm is a single CG/cache read with AX enrichment initially disabled; hide/reset preserves it, shutdown cancels it permanently. Late canceled periodic reads cannot replace cache, and repeated presentation does not spawn duplicates.
+
+The pre-fix implementation reproduced six failing assertions in seven initial model tests (including parameterized stream cases); the fixed eight-test suite also covers active-read→busy→ready cancellation, and all existing authorization/restoration tests pass. Request-start, prewarm and first-round timing logs distinguish blocked scheduling from slow enumeration. Model timings do not establish real phone-to-visible latency; verify that separately in the authorized normal app.

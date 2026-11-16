@@ -29,5 +29,6 @@ let package = Package(
         ),
         .testTarget(name: "SnugCoreTests", dependencies: ["SnugCore"], resources: [.copy("Fixtures")]),
         .testTarget(name: "SnugSystemTests", dependencies: ["SnugSystem"]),
+        .testTarget(name: "SnugAppTests", dependencies: ["Snug"]),
     ]
 )
