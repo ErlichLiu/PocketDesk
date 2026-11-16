@@ -15,6 +15,10 @@ powershell -NoProfile -File apps/windows/scripts/Start-PocketDesk.ps1
 
 `Install-PocketDesk.ps1` copies that build to `%LOCALAPPDATA%\Programs\PocketDesk`, verifies file hashes and creates a Start Menu shortcut. It refuses to overwrite a running installed executable. It does not install or restart drivers. Use `-NoLaunch` to stop after installation.
 
+## Actions package
+
+For a self-contained x64 ZIP with its .NET runtime, use the successful Windows Actions artifact or `scripts/Package-PocketDesk.ps1`. No installer/driver or trusted signature is included. This differs from the framework-dependent `Build-PocketDesk.ps1` output above. See [development packages](../../docs/development-packages.md).
+
 ## Use
 
 1. Ensure exactly one supported, non-primary virtual display is active. VDD's generic monitor name may differ from the app name.

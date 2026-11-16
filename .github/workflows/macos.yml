@@ -3,6 +3,7 @@ name: macOS
 on:
   push:
   pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -34,3 +35,19 @@ jobs:
           scripts/pocketdesk app
           plutil -lint build/PocketDesk.app/Contents/Info.plist
           codesign --verify --strict --deep build/PocketDesk.app
+      - name: Package universal macOS development build
+        id: package
+        if: github.event_name != 'pull_request'
+        working-directory: apps/macos
+        run: scripts/package
+      - name: Upload development ZIP and checksum
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.package.outputs.artifact_name }}
+          path: |
+            ${{ steps.package.outputs.archive }}
+            ${{ steps.package.outputs.archive }}.sha256
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0

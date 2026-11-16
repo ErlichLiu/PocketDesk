@@ -3,6 +3,7 @@ name: Windows
 on:
   push:
   pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -32,3 +33,19 @@ jobs:
       - name: Build framework-dependent application
         shell: pwsh
         run: ./apps/windows/scripts/Build-PocketDesk.ps1
+      - name: Package self-contained Windows x64 development build
+        id: package
+        if: github.event_name != 'pull_request'
+        shell: pwsh
+        run: ./apps/windows/scripts/Package-PocketDesk.ps1
+      - name: Upload development ZIP and checksum
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.package.outputs.artifact_name }}
+          path: |
+            ${{ steps.package.outputs.archive }}
+            ${{ steps.package.outputs.archive }}.sha256
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0

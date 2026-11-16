@@ -19,7 +19,7 @@ RUNTIME_NAMES = {"config.json", "phone-screen.json", "zoom.json", "mcp.json", "c
 # The old name is allowed only for attribution, compatibility and retained native namespaces.
 LEGACY_NAME_ALLOWLIST = {
     ".gitignore", "NOTICE", "README.md", "README.zh-CN.md", "licenses/snug-MIT.txt",
-    "docs/architecture.md", "tools/test_check_publication.py",
+    "docs/architecture.md", "tools/test_check_publication.py", "tools/package_artifacts.py",
     "apps/macos/Package.swift", "apps/macos/LICENSE", "apps/macos/README.md",
     "apps/macos/README.zh-CN.md", "apps/macos/scripts/pocketdesk", "apps/macos/scripts/snug",
     "apps/macos/Assets/AppIcon/README.md", "apps/macos/Assets/AppIcon/AppIcon.svg",

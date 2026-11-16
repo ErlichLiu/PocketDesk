@@ -29,6 +29,10 @@ licenses         上游许可证
 
 不要为了 monorepo 空建共享包或引入 Node；出现真实跨平台契约后再提炼。
 
+## 下载开发包
+
+成功的 push／手动 Actions 会提供 Windows x64 自带运行时包和 macOS Intel/Apple Silicon 通用 ZIP，含校验值与源码版本，保留14天。这不是正式 Release；Windows 未签名，macOS 为 ad-hoc、未公证。见 [下载与使用说明](docs/development-packages.md)。
+
 ## Windows 构建与安装
 
 需要 Windows 10/11 x64、.NET 8 SDK，以及独立安装、正常工作的 [Virtual Display Driver](https://github.com/VirtualDrivers/Virtual-Display-Driver)。

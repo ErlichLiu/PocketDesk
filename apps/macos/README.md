@@ -20,6 +20,10 @@ scripts/pocketdesk app
 
 After deliberately installing/launching it, grant the current app in macOS Privacy & Security → Accessibility/device-control access. Normal launch starts real monitoring; permission and fresh automatic or explicit manual authorization can then cause display/window changes. Coordinate real-device testing rather than treating build commands as permission to perform it.
 
+## Actions package
+
+Successful push/manual macOS Actions runs provide a universal Intel/Apple Silicon ZIP, ad-hoc signed and not notarized. `scripts/package` builds it without installing or launching; `scripts/pocketdesk app` still builds only the host architecture. See [development packages](../../docs/development-packages.md).
+
 ## Behavior and boundaries
 
 - Unknown controllers, outgoing Windows-device tables and historical or standalone streaming are not automatic display authority. Current local-controlled phone evidence and the current UU server identity are required. Unrecognized UI layouts fail closed.
