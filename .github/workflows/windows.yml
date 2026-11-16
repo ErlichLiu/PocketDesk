@@ -1,0 +1,32 @@
+name: Windows
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build-test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Check publication hygiene
+        run: python tools/check_publication.py --staged
+      - name: Build Windows solution
+        run: dotnet build apps/windows/PocketDesk.Windows.sln -c Release --nologo
+      - name: Run isolated tests
+        shell: pwsh
+        run: ./apps/windows/scripts/Test-PocketDesk.ps1
+      - name: Build framework-dependent application
+        shell: pwsh
+        run: ./apps/windows/scripts/Build-PocketDesk.ps1

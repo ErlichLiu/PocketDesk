@@ -1,0 +1,35 @@
+PocketDesk third-party notices and license scope
+
+1. PocketDesk application, tests and repository tooling
+   Licensed under the root MIT LICENSE, except where an individual file or
+   subtree states otherwise.
+
+2. Snug (macOS reference project)
+   https://github.com/zephyr4123/snug
+   Copyright (c) 2026 AoyamaShou
+   Copyright (c) 2026 zephyr4123
+   License: MIT; full upstream text is preserved in licenses/snug-MIT.txt.
+   PocketDesk's Windows workspace concepts and behavior were developed with
+   reference to this project. Snug is acknowledged, not presented as a
+   PocketDesk-owned original project. The macOS implementation has not yet
+   been imported into this repository.
+
+3. Microsoft Windows-driver-samples / IndirectDisplay
+   https://github.com/microsoft/Windows-driver-samples/tree/main/video/IndirectDisplay
+   Copyright (c) Microsoft Corporation
+   License: Microsoft Public License (MS-PL).
+   drivers/windows contains experimental code adapted from this sample.
+   That entire subtree is distributed under the MS-PL text preserved at
+   drivers/windows/LICENSE; it is NOT relicensed under the root MIT license.
+   Original copyright notices in the adapted files are retained.
+
+4. Virtual Display Driver (VDD)
+   https://github.com/VirtualDrivers/Virtual-Display-Driver
+   A separately installed runtime dependency on Windows. Its binaries,
+   drivers, certificates, configuration and installer are not distributed
+   in this repository. Obtain and review its license from its own project.
+
+5. UU Remote / GameViewer
+   A separate proprietary product. No UU binaries, private SDKs, account
+   credentials or internal logs are included. PocketDesk is not affiliated
+   with or endorsed by UU or NetEase. Product names remain their owners'.

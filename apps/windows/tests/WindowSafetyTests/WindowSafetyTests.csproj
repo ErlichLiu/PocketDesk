@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../src/PocketDeskCore/PocketDeskCore.csproj" />
+    <ProjectReference Include="../../src/PocketDeskSystem/PocketDeskSystem.csproj" />
+    <!-- 编译真实调度源码，绕开 WPF/UI；平台全部由替身注入，不操作真实窗口。 -->
+    <Compile Include="../../src/PocketDeskApp/PhoneDesk.cs" Link="PhoneDesk.cs" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>PocketDesk.App</RootNamespace>
+    <AssemblyName>PocketDesk</AssemblyName>
+    <Version>0.3.0</Version>
+    <Product>PocketDesk</Product>
+    <Description>A phone-friendly remote desktop workspace</Description>
+    <!-- 主界面是 WPF，WinForms 仅用于托盘；保留 manifest 中的 PerMonitorV2。 -->
+    <NoWarn>$(NoWarn);WFAC010</NoWarn>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PocketDeskCore\PocketDeskCore.csproj" />
+    <ProjectReference Include="..\PocketDeskSystem\PocketDeskSystem.csproj" />
+  </ItemGroup>
+
+</Project>

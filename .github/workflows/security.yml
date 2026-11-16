@@ -1,0 +1,30 @@
+name: Publication security
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  secrets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Download and verify Gitleaks
+        env:
+          GITLEAKS_VERSION: '8.30.1'
+        run: |
+          name="gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          base="https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}"
+          curl --fail --location --retry 3 "$base/$name" -o "$RUNNER_TEMP/$name"
+          curl --fail --location --retry 3 "$base/gitleaks_${GITLEAKS_VERSION}_checksums.txt" -o "$RUNNER_TEMP/checksums.txt"
+          cd "$RUNNER_TEMP"
+          grep -E "  ${name}$" checksums.txt | sha256sum --check --strict
+          tar -xzf "$name" gitleaks
+      - name: Scan Git history (redacted)
+        run: '"$RUNNER_TEMP/gitleaks" git . --redact --no-banner'

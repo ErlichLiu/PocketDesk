@@ -1,0 +1,106 @@
+; Experimental PocketDesk indirect display driver. Not a supported installer.
+; See ../README.md and LICENSE for safety and license scope.
+
+[Version]
+
+Signature   = "$Windows NT$"
+
+Class       = Display
+
+ClassGuid   = {4D36E968-E325-11CE-BFC1-08002BE10318}
+
+Provider    = %ManufacturerName%
+
+CatalogFile = PocketDeskIdd.cat
+
+DriverVer   = 11/16/2026,0.3.0.0
+
+PnpLockdown = 1
+
+[Manufacturer]
+
+%ManufacturerName% = PocketDesk, NTamd64
+
+[PocketDesk.NTamd64]
+
+%DeviceName% = PocketDesk_Install, Root\PocketDeskIdd
+
+[SourceDisksFiles]
+
+PocketDeskIdd.dll = 1
+
+[SourceDisksNames]
+
+1 = %DiskName%
+
+[PocketDesk_Install.NT]
+
+CopyFiles = UMDriverCopy
+
+[PocketDesk_Install.NT.hw]
+
+AddReg = PocketDesk_HardwareDeviceSettings
+
+[PocketDesk_HardwareDeviceSettings]
+
+HKR,, "UpperFilters", %REG_MULTI_SZ%, "IndirectKmd"
+
+HKR, "WUDF", "DeviceGroupId", %REG_SZ%, "IddDriverGroup"
+
+HKR,, Security, , "D:P(A;;GA;;;BA)(A;;GA;;;SY)(A;;GA;;;UD)"
+
+[PocketDesk_Install.NT.Services]
+
+AddService = WUDFRd, 0x000001fa, WUDFRD_ServiceInstall
+
+[PocketDesk_Install.NT.Wdf]
+
+UmdfService = PocketDeskIdd, PocketDesk_ServiceInstall
+
+UmdfServiceOrder = PocketDeskIdd
+
+UmdfKernelModeClientPolicy = AllowKernelModeClients
+
+[PocketDesk_ServiceInstall]
+
+UmdfLibraryVersion = 2.25.0
+
+ServiceBinary = %12%\UMDF\PocketDeskIdd.dll
+
+UmdfExtensions = IddCx0102
+
+[WUDFRD_ServiceInstall]
+
+DisplayName = %WudfRdDisplayName%
+
+ServiceType = 1
+
+StartType = 3
+
+ErrorControl = 1
+
+ServiceBinary = %12%\WUDFRd.sys
+
+[DestinationDirs]
+
+UMDriverCopy = 12, UMDF
+
+[UMDriverCopy]
+
+PocketDeskIdd.dll
+
+[Strings]
+
+ManufacturerName = "PocketDesk"
+
+DiskName = "PocketDesk Phone Installation Disk"
+
+WudfRdDisplayName = "Windows Driver Foundation - User-mode Driver Framework Reflector"
+
+DeviceName = "PocketDesk Virtual Display Adapter"
+
+REG_MULTI_SZ = 0x00010000
+
+REG_SZ = 0x00000000
+
+REG_DWORD = 0x00010001
