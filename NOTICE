@@ -4,15 +4,18 @@ PocketDesk third-party notices and license scope
    Licensed under the root MIT LICENSE, except where an individual file or
    subtree states otherwise.
 
-2. Snug (macOS reference project)
+2. Snug (macOS source and Windows reference project)
    https://github.com/zephyr4123/snug
    Copyright (c) 2026 AoyamaShou
    Copyright (c) 2026 zephyr4123
    License: MIT; full upstream text is preserved in licenses/snug-MIT.txt.
-   PocketDesk's Windows workspace concepts and behavior were developed with
-   reference to this project. Snug is acknowledged, not presented as a
-   PocketDesk-owned original project. The macOS implementation has not yet
-   been imported into this repository.
+   PocketDesk's Windows workspace concepts reference this project. The native
+   macOS 0.2.4 implementation in apps/macos derives from Snug 2.2.1, baseline
+   1211dc24555099b05baccc06fe3e6e9477b906d1. Its engine, original icon and internal
+   module names are retained; apps/macos/LICENSE also preserves the full MIT
+   notice. It is not presented as PocketDesk-owned original work or an official
+   Snug update. Existing in-source and About credits, including UUyc-companion,
+   Better Remote and FreeDisplay, are preserved with the import.
 
 3. Microsoft Windows-driver-samples / IndirectDisplay
    https://github.com/microsoft/Windows-driver-samples/tree/main/video/IndirectDisplay
@@ -33,3 +36,10 @@ PocketDesk third-party notices and license scope
    A separate proprietary product. No UU binaries, private SDKs, account
    credentials or internal logs are included. PocketDesk is not affiliated
    with or endorsed by UU or NetEase. Product names remain their owners'.
+
+6. PermissionFlow / SystemSettingsKit
+   https://github.com/jaywcjlove/PermissionFlow, tag v2.11.3
+   Copyright (c) 2026 小弟调调
+   License: MIT; complete text at apps/macos/Vendor/PermissionFlow/LICENSE.
+   A reduced, locally adapted source copy is vendored for native permission
+   guidance. See apps/macos/Vendor/PermissionFlow/VENDORED.md for the changes.

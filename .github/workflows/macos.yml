@@ -1,0 +1,36 @@
+name: macOS
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build-test:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Report native toolchain
+        run: |
+          xcode-select --print-path
+          swift --version
+      - name: Test publication checks
+        run: python3 -m unittest discover -s tools -p 'test_*.py'
+      - name: Check publication hygiene
+        run: python3 tools/check_publication.py --staged
+      - name: Run isolated Swift tests
+        working-directory: apps/macos
+        run: swift test --jobs 4
+      - name: Build local development app without launching
+        working-directory: apps/macos
+        run: |
+          scripts/pocketdesk app
+          plutil -lint build/PocketDesk.app/Contents/Info.plist
+          codesign --verify --strict --deep build/PocketDesk.app

@@ -1,0 +1,5 @@
+#!/bin/bash
+# 上游入口彻底停用：不加载机器配置，不编译、不安装、不退出应用、不联网或发布。
+set -euo pipefail
+printf '%s\n' 'PocketDesk 已禁用全部 scripts/snug 命令（含 help）。本地构建请用 scripts/pocketdesk help；不提供安装或发布入口。' >&2
+exit 1

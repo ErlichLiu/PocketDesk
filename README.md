@@ -4,7 +4,7 @@ A phone-friendly remote desktop workspace, built as a cross-platform monorepo.
 
 [简体中文](README.zh-CN.md) · [Architecture](docs/architecture.md) · [Contributing](CONTRIBUTING.md) · [License scope](NOTICE)
 
-> **Experimental software.** Windows is implemented; macOS is a reserved integration location, not a working port. PocketDesk is not a remote streaming client and does not replace UU Remote/GameViewer.
+> **Experimental software.** Windows and macOS have separate native implementations; neither is a production-ready cross-platform release. PocketDesk is not a remote streaming client and does not replace UU Remote/GameViewer.
 
 ## What it does
 
@@ -24,7 +24,7 @@ On Windows, PocketDesk places a touch-sized window picker on an existing virtual
 ```text
 apps/
   windows/       .NET 8 / WPF app, Win32 layer, tests and user-level installer
-  macos/         Reserved for the future macOS integration; no implementation yet
+  macos/         Swift 6 / AppKit + SwiftUI app, system adapters, tests and local packager
 drivers/
   windows/       Unsupported experimental IddCx source (MS-PL, not MIT)
 docs/            Cross-platform boundaries and user-facing documentation
@@ -52,19 +52,38 @@ The user-level installer copies the app to `%LOCALAPPDATA%\Programs\PocketDesk`,
 
 See [Windows details](apps/windows/README.md) for monitor selection, permissions, settings and legacy data migration.
 
+## macOS quick start
+
+Requires macOS 14+, Swift 6 and full Xcode. PermissionFlow is vendored with its MIT license; there is no remote package fetch or global dependency installation.
+
+```bash
+cd apps/macos
+swift test --jobs 4
+scripts/pocketdesk app
+# Output: apps/macos/build/PocketDesk.app (relative to the repository root)
+```
+
+The build command does **not** install, launch, request permissions or create a display. It produces a host-architecture, ad-hoc-signed development app, not a notarized release. A rebuild may require renewed macOS permission approval.
+
+The imported macOS version is **0.2.4**. It creates an isolated phone display only after explicit manual intent or fresh, scoped evidence that a recognized phone controls this Mac. Historical streaming and a phone controlling Windows are not activation authority. First-time/empty desktops retain the bottom bar; the window picker opens explicitly, and a valid remembered window can resume without showing it.
+
+See [macOS details](apps/macos/README.md) for permissions, data isolation, foldable layouts and real-device validation limits. The Windows manual-monitor workflow is intentionally different.
+
 ## Current boundaries
 
-- A working third-party virtual display is required. The included experimental IddCx driver has not successfully loaded in the development environment (Code 31); it is **not a supported installer**.
-- Reliable UU connection/phone identity detection is not available. There is no automatic disconnect restoration or primary-monitor switching.
-- The experimental gesture translator and text-zoom helpers are not enabled in the default app.
+- **Windows:** A working third-party virtual display is required. The included experimental IddCx driver has not successfully loaded in the development environment (Code 31); it is **not a supported installer**.
+- **Windows:** Reliable UU connection/phone identity detection is not available. There is no automatic disconnect restoration or primary-monitor switching.
+- **Windows:** The experimental gesture translator and text-zoom helpers are not enabled in the default app.
+- **macOS:** Accessibility/device-control permission and a compatible UU interface are required. Virtual displays use private macOS APIs and may break after OS changes; unknown controller layouts fail closed.
 - Logic tests do not establish phone-side touch usability. Validate on your actual phone and remote client.
 - Do not restart a display driver, UU, Explorer or the computer while depending on the live remote connection.
 
 ## Development and checks
 
-The tests are dependency-free console executables. They use isolated data and fake window/display platforms where appropriate; `WindowProbe` is a separately launched native UI fixture, not an automated desktop test.
+The Windows tests are dependency-free console executables. They use isolated data and fake window/display platforms where appropriate; `WindowProbe` is a separately launched native UI fixture, not an automated desktop test.
 
 ```powershell
+python -m unittest discover -s tools -p "test_*.py"
 python tools/check_publication.py
 # After staging, audit the actual index snapshot:
 python tools/check_publication.py --staged
@@ -78,4 +97,4 @@ Do not commit runtime state, logs, certificates, private keys, local paths or bu
 
 Application code is **MIT**. `drivers/windows` is separately **MS-PL** because it adapts Microsoft's IndirectDisplay sample. See [LICENSE](LICENSE), [NOTICE](NOTICE), and [drivers/windows/LICENSE](drivers/windows/LICENSE).
 
-Workspace behavior was developed with reference to [Snug](https://github.com/zephyr4123/snug), with upstream MIT notices retained. VDD and UU remain separate projects/products; their binaries are not included.
+The macOS code is derived from, and Windows workspace behavior was developed with reference to [Snug](https://github.com/zephyr4123/snug), with upstream MIT notices retained. VDD and UU remain separate projects/products; their binaries are not included.

@@ -1,0 +1,78 @@
+#!/bin/bash
+# 仅本地构建：不读取上游机器配置，不安装、不打开、不注册登录项、不上传。
+set -euo pipefail
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
+
+readonly BUNDLE_ID="cool.proma.pocketdesk"
+readonly APP="build/PocketDesk.app"
+
+die() { printf '%s\n' "$*" >&2; exit 1; }
+usage() {
+  cat <<'USAGE'
+用法：scripts/pocketdesk <命令>
+  check   构建 PocketDesk 并运行 Swift 测试
+  app     仅生成 build/PocketDesk.app；本机架构、ad-hoc 签名，不安装或启动
+  help    显示帮助
+旧 install/dist/ship/mirror/media 命令均不支持；本工具不发布任何产物。
+USAGE
+}
+
+build_app() {
+  local version bin stage
+  version="$(tr -d '[:space:]' < VERSION)"
+  [[ $version =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || die "VERSION 必须是 x.y.z"
+  [[ ! -L build && ! -L "$APP" ]] || die "拒绝向符号链接 build 或 PocketDesk.app 打包"
+  swift build -c release --product PocketDesk --jobs 4
+  bin="$(swift build -c release --show-bin-path)"
+  [[ -f "$bin/PocketDesk" ]] || die "未找到 PocketDesk 可执行文件"
+  [[ -d "$bin/PermissionFlow_PermissionFlow.bundle" ]] || die "未找到 PermissionFlow 资源包"
+  mkdir -p build
+  stage="$(mktemp -d "$PWD/build/.pocketdesk.XXXXXX")"
+  # 失败只清理本次创建的暂存目录，已有本地产物直到校验通过都保持原样。
+  trap 'rm -rf -- "$stage"' EXIT
+  mkdir -p "$stage/PocketDesk.app/Contents/MacOS" "$stage/PocketDesk.app/Contents/Resources/Upstream"
+  cp "$bin/PocketDesk" "$stage/PocketDesk.app/Contents/MacOS/PocketDesk"
+  cp -R "$bin/PermissionFlow_PermissionFlow.bundle" "$stage/PocketDesk.app/Contents/Resources/"
+  cp Assets/AppIcon/AppIcon.icns "$stage/PocketDesk.app/Contents/Resources/"
+  cp LICENSE "$stage/PocketDesk.app/Contents/Resources/Upstream/LICENSE"
+  cp Vendor/PermissionFlow/LICENSE "$stage/PocketDesk.app/Contents/Resources/Upstream/PermissionFlow-LICENSE"
+  printf '%s\n' 'PocketDesk is derived from Snug 2.2.1, baseline 1211dc2 (MIT).' \
+    'Original copyrights: AoyamaShou and zephyr4123. Original icon retained.' \
+    > "$stage/PocketDesk.app/Contents/Resources/Upstream/NOTICE.txt"
+  cat > "$stage/PocketDesk.app/Contents/Info.plist" <<PLIST
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+  <key>CFBundleIdentifier</key><string>${BUNDLE_ID}</string>
+  <key>CFBundleName</key><string>PocketDesk</string>
+  <key>CFBundleDisplayName</key><string>PocketDesk</string>
+  <key>CFBundleExecutable</key><string>PocketDesk</string>
+  <key>CFBundleIconFile</key><string>AppIcon</string>
+  <key>CFBundlePackageType</key><string>APPL</string>
+  <key>CFBundleShortVersionString</key><string>${version}</string>
+  <key>CFBundleVersion</key><string>${version}</string>
+  <key>CFBundleDevelopmentRegion</key><string>zh_CN</string>
+  <key>CFBundleLocalizations</key><array><string>zh-Hans</string><string>en</string></array>
+  <key>LSMinimumSystemVersion</key><string>14.0</string>
+  <key>LSUIElement</key><true/>
+  <key>NSHighResolutionCapable</key><true/>
+  <key>NSHumanReadableCopyright</key><string>Based on Snug · © 2026 AoyamaShou, © 2026 zephyr4123 · MIT</string>
+</dict></plist>
+PLIST
+  plutil -lint "$stage/PocketDesk.app/Contents/Info.plist"
+  codesign --force --sign - --timestamp=none --identifier "$BUNDLE_ID" "$stage/PocketDesk.app"
+  codesign --verify --strict --deep "$stage/PocketDesk.app"
+  rm -rf -- "$APP"
+  mv "$stage/PocketDesk.app" "$APP"
+  rm -rf -- "$stage"
+  trap - EXIT
+  printf '%s\n' "已生成 ${APP}（ad-hoc，本机架构；未安装、未启动、未申请权限）"
+}
+
+[[ $# -le 1 ]] || die "仅接受一个命令；运行 scripts/pocketdesk help 查看用法"
+case "${1:-help}" in
+  check) swift build --product PocketDesk --jobs 4; swift test --jobs 4 ;;
+  app) build_app ;;
+  help|-h|--help) usage ;;
+  *) die "不支持的命令：$1；仅允许 check/app/help（不会安装、启动或发布）" ;;
+esac

@@ -56,3 +56,13 @@ DerivedData/
 secrets.*
 credentials.*
 gitleaks-report.*
+
+# Native macOS output and private development notes
+apps/macos/build/
+last-phone-window.json
+**/.memory/
+**/.context/
+.machine.env*
+
+# Native diagnostic code is source, not Windows Debug build output
+!apps/macos/Sources/Snug/Debug/
