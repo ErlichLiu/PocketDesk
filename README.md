@@ -35,6 +35,10 @@ licenses/        Third-party license notices
 
 There is no JavaScript workspace or shared runtime package to install. Platform code remains native. A shared package should be added only when a real cross-platform contract exists.
 
+## Download development packages
+
+Windows x64 self-contained and macOS universal ZIPs are uploaded by successful push/manual Actions runs. They include checksums and source metadata, expire after 14 days, and are not signed/notarized production Releases. See [package downloads and requirements](docs/development-packages.md).
+
 ## Windows quick start
 
 Prerequisites: Windows 10/11 x64, **.NET 8 SDK** (or the .NET 8 Desktop Runtime for a built app), and an independently installed, working virtual display such as [VDD](https://github.com/VirtualDrivers/Virtual-Display-Driver).

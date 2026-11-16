@@ -1,0 +1,44 @@
+#!/bin/bash
+# Build a universal, ad-hoc development ZIP. Never install or launch.
+set -euo pipefail
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
+root="$PWD"
+repo="$(cd ../.. && pwd)"
+version="$(tr -d '[:space:]' < VERSION)"
+commit="$(git rev-parse HEAD)"
+[[ $version =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || exit 1
+[[ ! -L artifacts && ! -L artifacts/packages ]] || { echo 'Refusing symlink output' >&2; exit 1; }
+mkdir -p artifacts/packages
+stage="$(mktemp -d "$root/artifacts/.package.XXXXXX")"
+trap 'rm -rf -- "$stage"' EXIT
+name="PocketDesk-${version}-macos-universal-${commit:0:8}"
+folder="$stage/$name"
+mkdir "$folder"
+scripts/pocketdesk app
+cp -R build/PocketDesk.app "$folder/"
+case "$(uname -m)" in
+  arm64) other=x86_64 ;;
+  x86_64) other=arm64 ;;
+  *) echo 'Unsupported build host' >&2; exit 1 ;;
+esac
+swift build -c release --product PocketDesk --arch "$other" --jobs 4
+bin="$(swift build -c release --arch "$other" --show-bin-path)"
+app="$folder/PocketDesk.app"
+lipo -create build/PocketDesk.app/Contents/MacOS/PocketDesk "$bin/PocketDesk" -output "$stage/universal"
+strip -S "$stage/universal"
+mv "$stage/universal" "$app/Contents/MacOS/PocketDesk"
+chmod 755 "$app/Contents/MacOS/PocketDesk"
+slices="$(lipo -archs "$app/Contents/MacOS/PocketDesk")"
+[[ " $slices " == *" arm64 "* && " $slices " == *" x86_64 "* ]] || { echo 'Missing architecture slice' >&2; exit 1; }
+codesign --force --sign - --timestamp=none --identifier cool.proma.pocketdesk "$app"
+codesign --verify --strict --deep --all-architectures "$app"
+plutil -lint "$app/Contents/Info.plist"
+python3 "$repo/tools/package_artifacts.py" prepare "$folder" macos "$version" "$commit"
+archive="$root/artifacts/packages/$name.zip"
+ditto -c -k --sequesterRsrc --keepParent "$folder" "$archive"
+python3 "$repo/tools/package_artifacts.py" verify "$archive" macos
+python3 "$repo/tools/package_artifacts.py" checksum "$archive"
+if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
+  printf 'archive=%s\nartifact_name=%s\n' "$archive" "$name" >> "$GITHUB_OUTPUT"
+fi
+printf 'Packaged %s (universal, ad-hoc, not notarized; never installed/launched)\n' "$archive"
